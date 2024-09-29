@@ -3,7 +3,9 @@
 # Define base directories
 USER_HOME="/home/$SUDO_USER"
 CONFIG_DIR="$USER_HOME/.config"
-SCRIPTS_DIR="$USER_HOME/Linux-Post-Installation"
+SCRIPTS_DIR="$USER_HOME/debain/scripts"
+DOTFILES_DIR="$USER_HOME/debain/dotfiles"
+DESTINATION="$CONFIG_DIR"
 
 # Check if script is running as root
 if [[ $EUID -ne 0 ]]; then
@@ -11,103 +13,121 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
+# Define colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
 echo -e "${YELLOW}Running script...${NC}"
 
 # Create directories safely
 mkdir -p "$CONFIG_DIR"
 mkdir -p "$USER_HOME/scripts"
 
+# Copy scripts from the debain folder
+echo -e "${GREEN}Copying scripts...${NC}"
+cp -r "$SCRIPTS_DIR/"* "$USER_HOME/scripts/" || { echo -e "${RED}Failed to copy scripts${NC}"; exit 1; }
+
 # Navigate to scripts directory safely
-if [ -d "$SCRIPTS_DIR/scripts" ]; then
-    cd "$SCRIPTS_DIR/scripts"
+if [ -d "$USER_HOME/scripts" ]; then
+    cd "$USER_HOME/scripts" || { echo -e "${RED}Failed to navigate to scripts directory.${NC}"; exit 1; }
     chmod +x install_packages install_nala picom
-    ./install_packages
+    ./install_packages || { echo -e "${RED}Failed to run install_packages.${NC}"; exit 1; }
 else
-    echo -e "${RED}Directory $SCRIPTS_DIR/scripts does not exist.${NC}"
+    echo -e "${RED}Scripts directory does not exist.${NC}"
     exit 1
 fi
 
-# Continue with the rest of the script with similar checks...
-
-
-
+# Moving dotfiles to correct location
 echo -e "${GREEN}---------------------------------------------------"
 echo -e "       Moving dotfiles to correct location"
 echo -e "---------------------------------------------------${NC}"
 
-cd "/home/$SUDO_USER/Linux-Post-Installation/dotfiles" || exit
+if [ -d "$DOTFILES_DIR" ]; then
+    cp -r "$DOTFILES_DIR/alacritty" "$DOTFILES_DIR/backgrounds" "$DOTFILES_DIR/fastfetch" \
+          "$DOTFILES_DIR/kitty" "$DOTFILES_DIR/picom" "$DOTFILES_DIR/rofi" \
+          "$DOTFILES_DIR/suckless" "$DESTINATION/" || { echo -e "${RED}Failed to copy dotfiles.${NC}"; exit 1; }
 
-cp -r alacritty backgrounds fastfetch kitty picom rofi suckless "$DESTINATION/"
+    cp "$DOTFILES_DIR/.bashrc" "$USER_HOME/" || { echo -e "${RED}Failed to copy .bashrc.${NC}"; exit 1; }
+    cp -r "$DOTFILES_DIR/.local" "$USER_HOME/" || { echo -e "${RED}Failed to copy .local directory.${NC}"; exit 1; }
+    cp "$DOTFILES_DIR/.xinitrc" "$USER_HOME/" || { echo -e "${RED}Failed to copy .xinitrc.${NC}"; exit 1; }
+else
+    echo -e "${RED}Dotfiles directory does not exist.${NC}"
+    exit 1
+fi
 
-echo -e "${GREEN}---------------------------------------------------"
-echo -e "    Moving Home dir files to correct location"
-echo -e "---------------------------------------------------${NC}"
-
-cp .bashrc "/home/$SUDO_USER/"
-cp -r .local "/home/$SUDO_USER/"
-cp -r scripts "/home/$SUDO_USER/"
-cp .xinitrc "/home/$SUDO_USER/"
-
+# Fixing permissions
 echo -e "${GREEN}---------------------------------------------------"
 echo -e "            Fixing Home dir permissions"
 echo -e "---------------------------------------------------${NC}"
 
-chown -R "$SUDO_USER":"$SUDO_USER" "/home/$SUDO_USER/.config"
-chown -R "$SUDO_USER":"$SUDO_USER" "/home/$SUDO_USER/scripts"
-chown "$SUDO_USER":"$SUDO_USER" "/home/$SUDO_USER/.bashrc"
-chown -R "$SUDO_USER":"$SUDO_USER" "/home/$SUDO_USER/.local"
-chown "$SUDO_USER":"$SUDO_USER" "/home/$SUDO_USER/.xinitrc"
+chown -R "$SUDO_USER":"$SUDO_USER" "$CONFIG_DIR"
+chown -R "$SUDO_USER":"$SUDO_USER" "$USER_HOME/scripts"
+chown "$SUDO_USER":"$SUDO_USER" "$USER_HOME/.bashrc"
+chown -R "$SUDO_USER":"$SUDO_USER" "$USER_HOME/.local"
+chown "$SUDO_USER":"$SUDO_USER" "$USER_HOME/.xinitrc"
 
+# Timezone configuration
 echo -e "${GREEN}---------------------------------------------------"
 echo -e "                 Updating Timezone"
 echo -e "---------------------------------------------------${NC}"
 
 if command -v apt > /dev/null 2>&1; then
-    dpkg-reconfigure tzdata
+    dpkg-reconfigure tzdata || { echo -e "${YELLOW}Timezone reconfiguration failed.${NC}"; }
 else
     echo -e "${YELLOW}Unable to detect APT. Skipping timezone configuration.${NC}"
 fi
 
+# Building DWM and SLStatus
 echo -e "${GREEN}---------------------------------------------------"
 echo -e "            Building DWM and SLStatus"
 echo -e "---------------------------------------------------${NC}"
 
-cd "/home/$SUDO_USER/.config/suckless/dwm" || exit
-make clean install || echo -e "${RED}DWM build failed.${NC}"
-cd "/home/$SUDO_USER/.config/suckless/slstatus" || exit
-make clean install || echo -e "${RED}SLStatus build failed.${NC}"
+for dir in dwm slstatus; do
+    cd "$CONFIG_DIR/suckless/$dir" || { echo -e "${RED}Failed to navigate to $dir${NC}"; exit 1; }
+    make clean install || { echo -e "${RED}Build failed for $dir.${NC}"; exit 1; }
+done
 
-echo -e "${GREEN}---------------------------------------------------${NC}"
-echo -e "${GREEN}    Do you want to start Linux Toolbox? (y/n)"
-echo -e "---------------------------------------------------${NC}"
+# Prompt to run Linux Toolbox
+while true; do
+    read -r -p "Do you want to start Linux Toolbox? (y/n): " response
+    case $response in
+        [Yy]* )
+            echo -e "${YELLOW}Press Q to exit ${NC}"
+            echo -e "${GREEN}Launching in...${NC}"
+            for i in {5..1}; do
+                echo -e "${YELLOW}$i..${NC}"
+                sleep 1
+            done
+            curl -fsSL https://christitus.com/linux | sh
+            break
+            ;;
+        [Nn]* )
+            echo -e "${GREEN}Skipping...${NC}"
+            break
+            ;;
+        * )
+            echo -e "${RED}Please answer y or n.${NC}"
+            ;;
+    esac
+done
 
-read -r response
-
-if [[ "$response" == "y" || "$response" == "Y" ]]; then
-    echo -e "${YELLOW}Press Q to exit ${NC}"
-    echo -e "${GREEN}Launching in...${NC}"
-
-    for i in {5..1}; do
-        echo -e "${YELLOW}$i..${NC}"
-        sleep 1
-    done
-
-    curl -fsSL https://christitus.com/linux | sh
-else
-    echo -e "${GREEN}Skipping...${NC}"
-fi
-
-echo -e "${GREEN}---------------------------------------------------"
-echo -e "     Script finished. Reboot is recommended"
-echo -e "---------------------------------------------------${NC}"
-echo -e "${GREEN}    Do you want to restart the system now? (y/n)"
-echo -e "---------------------------------------------------${NC}"
-
-read -r response
-
-if [[ "$response" == "y" || "$response" == "Y" ]]; then
-    echo -e "${GREEN}Restarting the system...${NC}"
-    reboot
-else
-    echo -e "${GREEN}Restart skipped. Please remember to restart your system later.${NC}"
-fi
+# Prompt for reboot
+while true; do
+    read -r -p "Do you want to restart the system now? (y/n): " response
+    case $response in
+        [Yy]* )
+            echo -e "${GREEN}Restarting the system...${NC}"
+            reboot
+            break
+            ;;
+        [Nn]* )
+            echo -e "${GREEN}Restart skipped. Please remember to restart your system later.${NC}"
+            break
+            ;;
+        * )
+            echo -e "${RED}Please answer y or n.${NC}"
+            ;;
+    esac
+done
