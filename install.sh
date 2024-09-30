@@ -15,13 +15,26 @@ DOTFILES_DIR="$USER_HOME/debain/dotfiles"
 DESTINATION="$CONFIG_DIR"
 
 
-# Create directories safely
-mkdir -p "$CONFIG_DIR"
+
 
 # Corrected the path to scripts directory for chown
 chown -R "$USER":"$USER" "$SCRIPTS_DIR"
 
+echo -e "${GREEN}---------------------------------------------------"
+echo -e "${GREEN}            Installing dependencies"
+echo -e "${GREEN}---------------------------------------------------${NC}"
 
+# Create directories safely
+mkdir -p "$CONFIG_DIR"
+cd "$SCRIPTS_DIR"
+
+# Make sure all scripts are executable
+
+sudo chmod +x install_packages
+sudo chmod +x install_nala
+sudo chmod +x picom
+# ./install_packages
+pwd
 
 # Moving dotfiles to correct location
 echo -e "${GREEN}---------------------------------------------------"
@@ -47,7 +60,6 @@ echo -e "            Fixing Home dir permissions"
 echo -e "---------------------------------------------------${NC}"
 
 chown -R "$USER":"$USER" "$CONFIG_DIR"
-chown -R "$USER":"$USER" "$USER_HOME/scripts"
 chown "$USER":"$USER" "$USER_HOME/.bashrc"
 chown -R "$USER":"$USER" "$USER_HOME/.local"
 chown "$USER":"$USER" "$USER_HOME/.xinitrc"
