@@ -33,8 +33,8 @@ cd "$SCRIPTS_DIR"
 sudo chmod +x install_packages
 sudo chmod +x install_nala
 sudo chmod +x picom
-# ./install_packages
-pwd
+./install_packages
+
 
 # Moving dotfiles to correct location
 echo -e "${GREEN}---------------------------------------------------"
