@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define base directories
-USER_HOME="/home/$SUDO_USER"
+USER_HOME="/home/$USER"
 CONFIG_DIR="$USER_HOME/.config"
 SCRIPTS_DIR="$USER_HOME/debain/scripts"
 DOTFILES_DIR="$USER_HOME/debain/dotfiles"
@@ -25,9 +25,11 @@ echo -e "${YELLOW}Running script...${NC}"
 mkdir -p "$CONFIG_DIR"
 mkdir -p "$USER_HOME/scripts"
 
+chown -R "$USER":"$USER" "$SCRIPTS_DIR"
+
 # Copy scripts from the debain folder
 echo -e "${GREEN}Copying scripts...${NC}"
-cp -r "$SCRIPTS_DIR/"* "$USER_HOME/scripts/" || { echo -e "${RED}Failed to copy scripts${NC}"; exit 1; }
+sudo cp -r "$SCRIPTS_DIR/"* "$USER_HOME/scripts/" || { echo -e "${RED}Failed to copy scripts${NC}"; exit 1; }
 
 # Navigate to scripts directory safely
 if [ -d "$USER_HOME/scripts" ]; then
@@ -62,11 +64,11 @@ echo -e "${GREEN}---------------------------------------------------"
 echo -e "            Fixing Home dir permissions"
 echo -e "---------------------------------------------------${NC}"
 
-chown -R "$SUDO_USER":"$SUDO_USER" "$CONFIG_DIR"
-chown -R "$SUDO_USER":"$SUDO_USER" "$USER_HOME/scripts"
-chown "$SUDO_USER":"$SUDO_USER" "$USER_HOME/.bashrc"
-chown -R "$SUDO_USER":"$SUDO_USER" "$USER_HOME/.local"
-chown "$SUDO_USER":"$SUDO_USER" "$USER_HOME/.xinitrc"
+chown -R "$USER":"$USER" "$CONFIG_DIR"
+chown -R "$USER":"$USER" "$USER_HOME/scripts"
+chown "$USER":"$USER" "$USER_HOME/.bashrc"
+chown -R "$USER":"$USER" "$USER_HOME/.local"
+chown "$USER":"$USER" "$USER_HOME/.xinitrc"
 
 # Timezone configuration
 echo -e "${GREEN}---------------------------------------------------"
