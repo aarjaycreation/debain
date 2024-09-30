@@ -7,58 +7,67 @@ NC="\033[0m"
 
 echo -e "${YELLOW}Running script...${NC}"
 
-DESTINATION="$HOME/.config"
-sudo mkdir -p "$DESTINATION"
-#sudo mkdir -p "$HOME/scripts"
+# Define base directories
+USER_HOME="/home/$USER"
+CONFIG_DIR="$USER_HOME/.config"
+SCRIPTS_DIR="$USER_HOME/debain/scripts"
+DOTFILES_DIR="$USER_HOME/debain/dotfiles"
+DESTINATION="$CONFIG_DIR"
 
+# Check if script is running as root
+if [[ $EUID -ne 0 ]]; then
+    echo -e "${RED}This script must be run as root${NC}" 1>&2
+    exit 1
+fi
+
+# Create directories safely
+mkdir -p "$CONFIG_DIR"
+mkdir -p "$USER_HOME/scripts"
+
+chown -R "$USER":"$USER" "$SCRIPTS_DIR"
+
+# Copy scripts from the debain folder
+echo -e "${GREEN}Copying scripts...${NC}"
+sudo cp -r "$SCRIPTS_DIR/"* "$USER_HOME/scripts/" || { echo -e "${RED}Failed to copy scripts${NC}"; exit 1; }
+
+# Navigate to scripts directory safely
+if [ -d "$USER_HOME/scripts" ]; then
+    cd "$USER_HOME/scripts" || { echo -e "${RED}Failed to navigate to scripts directory.${NC}"; exit 1; }
+    chmod +x install_packages install_nala picom
+    ./install_packages || { echo -e "${RED}Failed to run install_packages.${NC}"; exit 1; }
+else
+    echo -e "${RED}Scripts directory does not exist.${NC}"
+    exit 1
+fi
+
+# Moving dotfiles to correct location
 echo -e "${GREEN}---------------------------------------------------"
-echo -e "${GREEN}            Installing dependencies"
-echo -e "${GREEN}---------------------------------------------------${NC}"
+echo -e "       Moving dotfiles to correct location"
+echo -e "---------------------------------------------------${NC}"
 
-cd $HOME/debain/scripts
+if [ -d "$DOTFILES_DIR" ]; then
+    cp -r "$DOTFILES_DIR/alacritty" "$DOTFILES_DIR/backgrounds" "$DOTFILES_DIR/fastfetch" \
+          "$DOTFILES_DIR/kitty" "$DOTFILES_DIR/picom" "$DOTFILES_DIR/rofi" \
+          "$DOTFILES_DIR/suckless" "$DESTINATION/" || { echo -e "${RED}Failed to copy dotfiles.${NC}"; exit 1; }
 
-# Make sure all scripts are executable
+    cp "$DOTFILES_DIR/.bashrc" "$USER_HOME/" || { echo -e "${RED}Failed to copy .bashrc.${NC}"; exit 1; }
+    cp -r "$DOTFILES_DIR/.local" "$USER_HOME/" || { echo -e "${RED}Failed to copy .local directory.${NC}"; exit 1; }
+    cp "$DOTFILES_DIR/.xinitrc" "$USER_HOME/" || { echo -e "${RED}Failed to copy .xinitrc.${NC}"; exit 1; }
+else
+    echo -e "${RED}Dotfiles directory does not exist.${NC}"
+    exit 1
+fi
 
-sudo chmod +x install_packages
-sudo chmod +x install_nala
-sudo chmod +x picom
-pwd
-# ./install_packages
-
+# Fixing permissions
 echo -e "${GREEN}---------------------------------------------------"
-echo -e "${GREEN}       Moving dotfiles to correct location"
-echo -e "${GREEN}---------------------------------------------------${NC}"
+echo -e "            Fixing Home dir permissions"
+echo -e "---------------------------------------------------${NC}"
 
-cd $HOME/debain/dotfiles
-
-sudo cp -r alacritty "$DESTINATION/"
-sudo cp -r backgrounds "$DESTINATION/"
-sudo cp -r fastfetch "$DESTINATION/"
-sudo cp -r kitty "$DESTINATION/"
-sudo cp -r picom "$DESTINATION/"
-sudo cp -r rofi "$DESTINATION/"
-sudo cp -r suckless "$DESTINATION/"
-
-pwd
-
-echo -e "${GREEN}---------------------------------------------------"
-echo -e "${GREEN}    Moving Home dir files to correct location"
-echo -e "${GREEN}---------------------------------------------------${NC}"
-
-sudo cp .bashrc "$HOME/"
-sudo cp -r .local "$HOME/"
-sudo cp -r scripts "$HOME/"
-sudo cp .xinitrc "$HOME/"
-
-echo -e "${GREEN}---------------------------------------------------"
-echo -e "${GREEN}            Fixing Home dir permissions"
-echo -e "${GREEN}---------------------------------------------------${NC}"
-
-sudo chown -R "$USER":"$USER" "$HOME/.config"
-sudo chown -R "$USER":"$USER" "$HOME/scripts"
-sudo chown "$USER":"$USER" "$HOME/.bashrc"
-sudo chown -R "$USER":"$USER" "$HOME/.local"
-sudo chown "$USER":"$USER" "$HOME/.xinitrc"
+chown -R "$USER":"$USER" "$CONFIG_DIR"
+chown -R "$USER":"$USER" "$USER_HOME/scripts"
+chown "$USER":"$USER" "$USER_HOME/.bashrc"
+chown -R "$USER":"$USER" "$USER_HOME/.local"
+chown "$USER":"$USER" "$USER_HOME/.xinitrc"
 
 # echo -e "${GREEN}---------------------------------------------------"
 # echo -e "${GREEN}                 Updating Timezone"
