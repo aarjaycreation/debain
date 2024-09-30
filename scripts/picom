@@ -13,6 +13,8 @@ sudo apt install -y libconfig-dev libdbus-1-dev libegl-dev libev-dev libgl-dev l
 sudo mkdir -p ~/bookworm-scripts/picom
 
 git clone https://github.com/FT-Labs/picom ~/bookworm-scripts/picom
+
+chown -R "$USER":"$USER" ~/bookworm-scripts/picom
 cd ~/bookworm-scripts/picom
 meson setup --buildtype=release build
 ninja -C build

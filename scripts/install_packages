@@ -72,7 +72,7 @@ if command -v apt > /dev/null 2>&1; then
         fi
     }
 
-    common_packages_file="$HOME/Linux-Post-Installation/scripts/common_packages.txt"
+    common_packages_file="$HOME/debain/scripts/common_packages.txt"
     read_common_packages "$common_packages_file"
 
     install_packages "${packages[@]}"
