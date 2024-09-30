@@ -10,6 +10,7 @@ echo -e "${YELLOW}Running script...${NC}"
 # Define base directories
 USER_HOME="/home/$USER"
 CONFIG_DIR="$USER_HOME/.config"
+# Corrected the path to scripts directory
 SCRIPTS_DIR="$USER_HOME/debain/scripts"
 DOTFILES_DIR="$USER_HOME/debain/dotfiles"
 DESTINATION="$CONFIG_DIR"
