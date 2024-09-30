@@ -15,20 +15,21 @@ echo -e "${GREEN}---------------------------------------------------"
 echo -e "${GREEN}            Installing dependencies"
 echo -e "${GREEN}---------------------------------------------------${NC}"
 
-cd "$HOME/Linux-Post-Installation/scripts"
+cd "$HOME/debain/scripts"
 
 # Make sure all scripts are executable
 
 sudo chmod +x install_packages
 sudo chmod +x install_nala
 sudo chmod +x picom
-./install_packages
+pwd
+# ./install_packages
 
 echo -e "${GREEN}---------------------------------------------------"
 echo -e "${GREEN}       Moving dotfiles to correct location"
 echo -e "${GREEN}---------------------------------------------------${NC}"
 
-cd "$HOME/Linux-Post-Installation/dotfiles"
+cd "$HOME/debain/dotfiles"
 
 sudo cp -r alacritty "$DESTINATION/"
 sudo cp -r backgrounds "$DESTINATION/"
@@ -37,6 +38,8 @@ sudo cp -r kitty "$DESTINATION/"
 sudo cp -r picom "$DESTINATION/"
 sudo cp -r rofi "$DESTINATION/"
 sudo cp -r suckless "$DESTINATION/"
+
+pwd
 
 echo -e "${GREEN}---------------------------------------------------"
 echo -e "${GREEN}    Moving Home dir files to correct location"
