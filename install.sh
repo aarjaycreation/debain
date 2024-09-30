@@ -15,11 +15,6 @@ SCRIPTS_DIR="$USER_HOME/debain/scripts"
 DOTFILES_DIR="$USER_HOME/debain/dotfiles"
 DESTINATION="$CONFIG_DIR"
 
-# Check if script is running as root
-if [[ $EUID -ne 0 ]]; then
-    echo -e "${RED}This script must be run as root${NC}" 1>&2
-    exit 1
-fi
 
 # Create directories safely
 mkdir -p "$CONFIG_DIR"
