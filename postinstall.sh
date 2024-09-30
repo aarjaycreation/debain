@@ -25,7 +25,7 @@ echo -e "${YELLOW}Running script...${NC}"
 mkdir -p "$CONFIG_DIR"
 mkdir -p "$USER_HOME/scripts"
 
-
+chown -R "$USER":"$USER" "$SCRIPTS_DIR"
 
 # Copy scripts from the debain folder
 echo -e "${GREEN}Copying scripts...${NC}"
