@@ -27,21 +27,9 @@ mkdir -p "$USER_HOME/scripts"
 
 
 
-# Fixing permissions
-echo -e "${GREEN}---------------------------------------------------"
-echo -e "            Fixing Home dir permissions"
-echo -e "---------------------------------------------------${NC}"
-
-chown -R "$USER":"$USER" "$CONFIG_DIR"
-chown -R "$USER":"$USER" "$USER_HOME/scripts"
-chown "$USER":"$USER" "$USER_HOME/.bashrc"
-chown -R "$USER":"$USER" "$USER_HOME/.local"
-chown "$USER":"$USER" "$USER_HOME/.xinitrc"
-
-
 # Copy scripts from the debain folder
 echo -e "${GREEN}Copying scripts...${NC}"
-sudo cp -r "$SCRIPTS_DIR/"* "$USER_HOME/scripts/" || { echo -e "${RED}Failed to copy scripts${NC}"; exit 1; }
+cp -r "$SCRIPTS_DIR/"* "$USER_HOME/scripts/" || { echo -e "${RED}Failed to copy scripts${NC}"; exit 1; }
 
 # Navigate to scripts directory safely
 if [ -d "$USER_HOME/scripts" ]; then
@@ -71,6 +59,16 @@ else
     exit 1
 fi
 
+# Fixing permissions
+echo -e "${GREEN}---------------------------------------------------"
+echo -e "            Fixing Home dir permissions"
+echo -e "---------------------------------------------------${NC}"
+
+chown -R "$USER":"$USER" "$CONFIG_DIR"
+chown -R "$USER":"$USER" "$USER_HOME/scripts"
+chown "$USER":"$USER" "$USER_HOME/.bashrc"
+chown -R "$USER":"$USER" "$USER_HOME/.local"
+chown "$USER":"$USER" "$USER_HOME/.xinitrc"
 
 # Timezone configuration
 echo -e "${GREEN}---------------------------------------------------"
