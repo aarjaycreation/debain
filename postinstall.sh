@@ -29,7 +29,7 @@ mkdir -p "$USER_HOME/scripts"
 
 # Copy scripts from the debain folder
 echo -e "${GREEN}Copying scripts...${NC}"
-cp -r "$SCRIPTS_DIR/"* "$USER_HOME/scripts/" || { echo -e "${RED}Failed to copy scripts${NC}"; exit 1; }
+sudo cp -r "$SCRIPTS_DIR/"* "$USER_HOME/scripts/" || { echo -e "${RED}Failed to copy scripts${NC}"; exit 1; }
 
 # Navigate to scripts directory safely
 if [ -d "$USER_HOME/scripts" ]; then
