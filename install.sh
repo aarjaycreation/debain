@@ -9,13 +9,13 @@ echo -e "${YELLOW}Running script...${NC}"
 
 DESTINATION="$HOME/.config"
 sudo mkdir -p "$DESTINATION"
-sudo mkdir -p "$HOME/scripts"
+#sudo mkdir -p "$HOME/scripts"
 
 echo -e "${GREEN}---------------------------------------------------"
 echo -e "${GREEN}            Installing dependencies"
 echo -e "${GREEN}---------------------------------------------------${NC}"
 
-cd "$HOME/debain/scripts"
+cd $HOME/debain/scripts
 
 # Make sure all scripts are executable
 
@@ -29,7 +29,7 @@ echo -e "${GREEN}---------------------------------------------------"
 echo -e "${GREEN}       Moving dotfiles to correct location"
 echo -e "${GREEN}---------------------------------------------------${NC}"
 
-cd "$HOME/debain/dotfiles"
+cd $HOME/debain/dotfiles
 
 sudo cp -r alacritty "$DESTINATION/"
 sudo cp -r backgrounds "$DESTINATION/"
