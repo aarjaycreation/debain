@@ -16,6 +16,6 @@ git clone https://github.com/FT-Labs/picom ~/bookworm-scripts/picom
 
 chown -R "$USER":"$USER" ~/bookworm-scripts/picom
 cd ~/bookworm-scripts/picom
-meson setup --buildtype=release build
+sudo meson setup --buildtype=release build
 ninja -C build
 sudo ninja -C build install
