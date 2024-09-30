@@ -10,7 +10,6 @@ echo -e "${YELLOW}Running script...${NC}"
 # Define base directories
 USER_HOME="/home/$USER"
 CONFIG_DIR="$USER_HOME/.config"
-# Corrected the path to scripts directory
 SCRIPTS_DIR="$USER_HOME/debain/scripts"
 DOTFILES_DIR="$USER_HOME/debain/dotfiles"
 DESTINATION="$CONFIG_DIR"
@@ -22,19 +21,7 @@ mkdir -p "$CONFIG_DIR"
 # Corrected the path to scripts directory for chown
 chown -R "$USER":"$USER" "$SCRIPTS_DIR"
 
-# Copy scripts from the debain folder
-echo -e "${GREEN}Copying scripts...${NC}"
-sudo cp -r "$SCRIPTS_DIR/"* "$USER_HOME/scripts/" || { echo -e "${RED}Failed to copy scripts${NC}"; exit 1; }
 
-# Navigate to scripts directory safely
-if [ -d "$USER_HOME/scripts" ]; then
-    cd "$USER_HOME/scripts" || { echo -e "${RED}Failed to navigate to scripts directory.${NC}"; exit 1; }
-    chmod +x install_packages install_nala picom
-    ./install_packages || { echo -e "${RED}Failed to run install_packages.${NC}"; exit 1; }
-else
-    echo -e "${RED}Scripts directory does not exist.${NC}"
-    exit 1
-fi
 
 # Moving dotfiles to correct location
 echo -e "${GREEN}---------------------------------------------------"
