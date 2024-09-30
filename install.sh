@@ -15,60 +15,67 @@ SCRIPTS_DIR="$USER_HOME/debain/scripts"
 DOTFILES_DIR="$USER_HOME/debain/dotfiles"
 DESTINATION="$CONFIG_DIR"
 
-# Check if script is running as root
-if [[ $EUID -ne 0 ]]; then
-    echo -e "${RED}This script must be run as root${NC}" 1>&2
-    exit 1
-fi
 
-# Create directories safely
-mkdir -p "$CONFIG_DIR"
-mkdir -p "$USER_HOME/scripts"
+echo echo -e "${red}enter${NC}"
 
-chown -R "$USER":"$USER" "$SCRIPTS_DIR"
+cd $SCRIPTS_DIR
 
-# Copy scripts from the debain folder
-echo -e "${GREEN}Copying scripts...${NC}"
-sudo cp -r "$SCRIPTS_DIR/"* "$USER_HOME/scripts/" || { echo -e "${RED}Failed to copy scripts${NC}"; exit 1; }
+pwd
 
-# Navigate to scripts directory safely
-if [ -d "$USER_HOME/scripts" ]; then
-    cd "$USER_HOME/scripts" || { echo -e "${RED}Failed to navigate to scripts directory.${NC}"; exit 1; }
-    chmod +x install_packages install_nala picom
-    ./install_packages || { echo -e "${RED}Failed to run install_packages.${NC}"; exit 1; }
-else
-    echo -e "${RED}Scripts directory does not exist.${NC}"
-    exit 1
-fi
+# # Check if script is running as root
+# if [[ $EUID -ne 0 ]]; then
+#     echo -e "${RED}This script must be run as root${NC}" 1>&2
+#     exit 1
+# fi
 
-# Moving dotfiles to correct location
-echo -e "${GREEN}---------------------------------------------------"
-echo -e "       Moving dotfiles to correct location"
-echo -e "---------------------------------------------------${NC}"
+# # Create directories safely
+# mkdir -p "$CONFIG_DIR"
 
-if [ -d "$DOTFILES_DIR" ]; then
-    cp -r "$DOTFILES_DIR/alacritty" "$DOTFILES_DIR/backgrounds" "$DOTFILES_DIR/fastfetch" \
-          "$DOTFILES_DIR/kitty" "$DOTFILES_DIR/picom" "$DOTFILES_DIR/rofi" \
-          "$DOTFILES_DIR/suckless" "$DESTINATION/" || { echo -e "${RED}Failed to copy dotfiles.${NC}"; exit 1; }
+# # Corrected the path to scripts directory for chown
+# chown -R 777 "$USER":"$USER" "$SCRIPTS_DIR"
 
-    cp "$DOTFILES_DIR/.bashrc" "$USER_HOME/" || { echo -e "${RED}Failed to copy .bashrc.${NC}"; exit 1; }
-    cp -r "$DOTFILES_DIR/.local" "$USER_HOME/" || { echo -e "${RED}Failed to copy .local directory.${NC}"; exit 1; }
-    cp "$DOTFILES_DIR/.xinitrc" "$USER_HOME/" || { echo -e "${RED}Failed to copy .xinitrc.${NC}"; exit 1; }
-else
-    echo -e "${RED}Dotfiles directory does not exist.${NC}"
-    exit 1
-fi
+# # Copy scripts from the debain folder
+# echo -e "${GREEN}Copying scripts...${NC}"
+# sudo cp -r "$SCRIPTS_DIR/"* "$USER_HOME/scripts/" || { echo -e "${RED}Failed to copy scripts${NC}"; exit 1; }
 
-# Fixing permissions
-echo -e "${GREEN}---------------------------------------------------"
-echo -e "            Fixing Home dir permissions"
-echo -e "---------------------------------------------------${NC}"
+# # Navigate to scripts directory safely
+# if [ -d "$USER_HOME/scripts" ]; then
+#     cd "$USER_HOME/scripts" || { echo -e "${RED}Failed to navigate to scripts directory.${NC}"; exit 1; }
+#     chmod +x install_packages install_nala picom
+#     ./install_packages || { echo -e "${RED}Failed to run install_packages.${NC}"; exit 1; }
+# else
+#     echo -e "${RED}Scripts directory does not exist.${NC}"
+#     exit 1
+# fi
 
-chown -R "$USER":"$USER" "$CONFIG_DIR"
-chown -R "$USER":"$USER" "$USER_HOME/scripts"
-chown "$USER":"$USER" "$USER_HOME/.bashrc"
-chown -R "$USER":"$USER" "$USER_HOME/.local"
-chown "$USER":"$USER" "$USER_HOME/.xinitrc"
+# # Moving dotfiles to correct location
+# echo -e "${GREEN}---------------------------------------------------"
+# echo -e "       Moving dotfiles to correct location"
+# echo -e "---------------------------------------------------${NC}"
+
+# if [ -d "$DOTFILES_DIR" ]; then
+#     cp -r "$DOTFILES_DIR/alacritty" "$DOTFILES_DIR/backgrounds" "$DOTFILES_DIR/fastfetch" \
+#           "$DOTFILES_DIR/kitty" "$DOTFILES_DIR/picom" "$DOTFILES_DIR/rofi" \
+#           "$DOTFILES_DIR/suckless" "$DESTINATION/" || { echo -e "${RED}Failed to copy dotfiles.${NC}"; exit 1; }
+
+#     cp "$DOTFILES_DIR/.bashrc" "$USER_HOME/" || { echo -e "${RED}Failed to copy .bashrc.${NC}"; exit 1; }
+#     cp -r "$DOTFILES_DIR/.local" "$USER_HOME/" || { echo -e "${RED}Failed to copy .local directory.${NC}"; exit 1; }
+#     cp "$DOTFILES_DIR/.xinitrc" "$USER_HOME/" || { echo -e "${RED}Failed to copy .xinitrc.${NC}"; exit 1; }
+# else
+#     echo -e "${RED}Dotfiles directory does not exist.${NC}"
+#     exit 1
+# fi
+
+# # Fixing permissions
+# echo -e "${GREEN}---------------------------------------------------"
+# echo -e "            Fixing Home dir permissions"
+# echo -e "---------------------------------------------------${NC}"
+
+# chown -R "$USER":"$USER" "$CONFIG_DIR"
+# chown -R "$USER":"$USER" "$USER_HOME/scripts"
+# chown "$USER":"$USER" "$USER_HOME/.bashrc"
+# chown -R "$USER":"$USER" "$USER_HOME/.local"
+# chown "$USER":"$USER" "$USER_HOME/.xinitrc"
 
 # echo -e "${GREEN}---------------------------------------------------"
 # echo -e "${GREEN}                 Updating Timezone"
